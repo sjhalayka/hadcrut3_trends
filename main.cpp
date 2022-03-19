@@ -1,10 +1,12 @@
 #include "main.h"
 
 
-int main(int argc, char** argv)
+int main(void)
 {
 	if (false == get_data(sd))
 		return -1;
+	
+	size_t min_years_per_slope = 20;
 
 	unsigned short int min_year = 10000;
 	unsigned short int max_year = 0;
@@ -23,19 +25,32 @@ int main(int argc, char** argv)
 
 	cout << min_year << " " << max_year << endl;
 
-	//for (map<size_t, station_data>::const_iterator cs = sd.begin(); cs != sd.end(); cs++)
-	//{
-	//	vector<float> output_trends;
+	vector<float> all_output_trends;
 
-	//	cout << cs->second.country << " " << cs->second.name << endl;
+	for (map<size_t, station_data>::const_iterator cs = sd.begin(); cs != sd.end(); cs++)
+	{
+		vector<float> local_output_trends;
 
-	//	get_local_trends(sd, cs->first, min_year, max_year, output_trends, 20);
-	//	
-	//	cout << output_trends.size() << endl;
-	//}
+		get_local_trends(sd, cs->first, min_year, max_year, local_output_trends, min_years_per_slope);
+
+		for (size_t i = 0; i < local_output_trends.size(); i++)
+			all_output_trends.push_back(local_output_trends[i]);
+	}
 	
+	double slope_mean = 0;
 
-	write_trend_histogram(sd, 100, 20);
+	for (size_t i = 0; i < all_output_trends.size(); i++)
+		slope_mean += all_output_trends[i];
+
+	slope_mean /= static_cast<double>(all_output_trends.size());
+	cout << "Global warming (degrees per century): ";
+	cout << 100*slope_mean << " +/- " << 100 * standard_deviation(all_output_trends) << endl;
+
+
+
+
+
+	//write_trend_histogram(sd, 100, min_years_per_slope);
 
 
 
