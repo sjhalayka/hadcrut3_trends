@@ -8,6 +8,7 @@ int main(void)
 	
 	size_t min_years_per_slope = 20;
 
+	// Get earliest and most recent years with records
 	unsigned short int min_year = 10000;
 	unsigned short int max_year = 0;
 
@@ -25,6 +26,7 @@ int main(void)
 
 	cout << min_year << " " << max_year << endl;
 
+	// Collect all trends and gather its mean and standard deviation
 	vector<float> all_output_trends;
 
 	for (map<size_t, station_data>::const_iterator cs = sd.begin(); cs != sd.end(); cs++)

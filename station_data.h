@@ -46,7 +46,6 @@ public:
 class station_data
 {
 public:
-	long unsigned int station_id;
 	string name;
 	string country;
 	float latitude;

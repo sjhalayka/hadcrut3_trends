@@ -44,15 +44,13 @@ ostream& operator<<(ostream &out, const year_data &y)
 
 station_data::station_data(void)
 {
-	station_id = 0;
 	name = country = "";
 	latitude = longitude = 0;
 }
 
 bool station_data::operator==(const station_data &rhs) const
 {
-	if(station_id == rhs.station_id && 
-		years == rhs.years &&
+	if(years == rhs.years &&
 		name == rhs.name &&
 		country == rhs.country &&
 		latitude == rhs.latitude &&
@@ -64,7 +62,7 @@ bool station_data::operator==(const station_data &rhs) const
 
 ostream& operator<<(ostream &out, const station_data &s)
 {
-	out << s.station_id << ' ' << s.name << ", " << s.country << ' ' << s.latitude << ' ' << s.longitude << endl;
+	out << s.name << ", " << s.country << ' ' << s.latitude << ' ' << s.longitude << endl;
 
 	for(map<short unsigned int, year_data>::const_iterator ci = s.years.begin(); ci != s.years.end(); ci++)
 		out << ci->first << ' ' << ci->second << endl;
@@ -143,7 +141,12 @@ bool get_data(map<size_t, station_data>& sd)
 
 	for(size_t i = 0; i < num_stations; i++)
 	{
-		infile.read(reinterpret_cast<char *>(&sd[i].station_id), sizeof(long unsigned int));
+		static size_t temp_station_id = 0;
+
+		// Read the station ID, even though we don't need it.
+		// The station ID is discarded because the station ID is
+		// the key to the map, which we would get from ci->first.
+		infile.read(reinterpret_cast<char *>(&temp_station_id), sizeof(long unsigned int));
 
 		short unsigned int length = 0;
 
