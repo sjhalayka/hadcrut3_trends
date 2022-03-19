@@ -140,15 +140,10 @@ bool get_data(map<size_t, station_data>& sd)
 
 	long unsigned int num_stations = 0;
 	infile.read(reinterpret_cast<char *>(&num_stations), sizeof(long unsigned int));
-//	sd.resize(num_stations);
-
-//	long unsigned int running_station_id = 0;
 
 	for(size_t i = 0; i < num_stations; i++)
 	{
 		infile.read(reinterpret_cast<char *>(&sd[i].station_id), sizeof(long unsigned int));
-
-//		sd[i].station_id = running_station_id++;
 
 		short unsigned int length = 0;
 
