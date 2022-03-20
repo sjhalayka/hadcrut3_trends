@@ -39,7 +39,7 @@ int main(void)
 		get_local_trends(sd[cs->first], min_year, max_year, local_output_trends, min_years_per_slope);
 
 		// cout << cs->second.name << ' ' << cs->second.country << ' ' << local_output_trends.size() << " trends" << endl;
-			
+
 		for (size_t i = 0; i < local_output_trends.size(); i++)
 			all_output_trends.push_back(local_output_trends[i]);
 	}
@@ -50,11 +50,12 @@ int main(void)
 		slope_mean += all_output_trends[i];
 
 	slope_mean /= static_cast<double>(all_output_trends.size());
+
 	cout << "Global warming (degrees per century): ";
 	cout << 100*slope_mean << " +/- " << 100*standard_deviation(all_output_trends) << endl;
 
 
-	//write_trend_histogram(sd, 100, min_years_per_slope);
+	write_trend_histogram(sd, 100, min_years_per_slope);
 
 	return 0;
 }

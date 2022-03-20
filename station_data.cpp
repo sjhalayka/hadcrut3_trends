@@ -89,6 +89,9 @@ float regline_slope(const vector<complex<float>> &xy)
 		variance += z*z;
 	}
 
+	covariance /= xy.size() - 1;
+	variance /= xy.size() - 1;
+
 	return covariance / variance;
 }
 
@@ -234,9 +237,9 @@ void write_trend_histogram(const map<long unsigned int, station_data>& sd, long 
 
 	slope_mean /= static_cast<double>(slopes.size());
 
-	cout << "Slope min (degrees per century):  " << 100 * slope_min << endl;
-	cout << "Slope max (degrees per century):  " << 100 * slope_max << endl;
-	cout << "Slope mean (degrees per century): " << 100 * slope_mean << " +/- " << 100 * standard_deviation(slopes) << endl;
+//	cout << "Slope min (degrees per century):  " << 100 * slope_min << endl;
+//	cout << "Slope max (degrees per century):  " << 100 * slope_max << endl;
+//	cout << "Slope mean (degrees per century): " << 100 * slope_mean << " +/- " << 100 * standard_deviation(slopes) << endl;
 
 
 	float distance = fabsf(slope_max - slope_min); // can skip fabsf, I suppose
@@ -260,7 +263,7 @@ void write_trend_histogram(const map<long unsigned int, station_data>& sd, long 
 
 	float curr_mid = slope_min + half_bin_width;
 
-	cout << "Outputting gnuplot histogram data." << endl;
+//	cout << "Outputting gnuplot histogram data." << endl;
 	ofstream plotdata("histogram.txt");
 
 	for (size_t i = 0; i < num_histogram_bins; i++)
