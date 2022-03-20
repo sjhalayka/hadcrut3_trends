@@ -195,7 +195,7 @@ void get_local_trends(const station_data &s, const short unsigned int& first_yea
 			output_trends.push_back(regline_slope(xy[j]));
 }
 
-void write_trend_histogram(const map<long unsigned int, station_data> &sd, const long unsigned int num_histogram_bins, const size_t min_samples_per_slope)
+void write_trend_histogram(const map<long unsigned int, station_data>& sd, long unsigned int num_histogram_bins, const size_t min_samples_per_slope)
 {
 	vector<float> slopes;
 
@@ -205,26 +205,28 @@ void write_trend_histogram(const map<long unsigned int, station_data> &sd, const
 		// one vector per month
 		vector<complex<float>> xy[12];
 
-		for(map<short unsigned int, year_data>::const_iterator cy = cs->second.years.begin(); cy != cs->second.years.end(); cy++)
-			for(size_t k = 0; k < 12; k++)
-				if((cy->second).temperatures[k] != -99.0f) // -99 indicates missing record
+		for (map<short unsigned int, year_data>::const_iterator cy = cs->second.years.begin(); cy != cs->second.years.end(); cy++)
+			for (size_t k = 0; k < 12; k++)
+				if ((cy->second).temperatures[k] != -99.0f)
 					xy[k].push_back(complex<float>(static_cast<float>(cy->first), (cy->second).temperatures[k]));
 
-		for(size_t j = 0; j < 12; j++)
-			if(min_samples_per_slope <= xy[j].size())
+		for (size_t j = 0; j < 12; j++)
+			if (min_samples_per_slope <= xy[j].size())
 				slopes.push_back(regline_slope(xy[j]));
 	}
+
+	sort(slopes.begin(), slopes.end());
 
 	float slope_min = FLT_MAX;
 	float slope_max = FLT_MIN;
 	double slope_mean = 0;
 
-	for(size_t i = 0; i < slopes.size(); i++)
+	for (size_t i = 0; i < slopes.size(); i++)
 	{
-		if(slopes[i] < slope_min)
+		if (slopes[i] < slope_min)
 			slope_min = slopes[i];
 
-		if(slopes[i] > slope_max)
+		if (slopes[i] > slope_max)
 			slope_max = slopes[i];
 
 		slope_mean += slopes[i];
@@ -232,9 +234,10 @@ void write_trend_histogram(const map<long unsigned int, station_data> &sd, const
 
 	slope_mean /= static_cast<double>(slopes.size());
 
-	cout << "Slope min (degrees per century):  " << 100*slope_min << endl;
-	cout << "Slope max (degrees per century):  " << 100*slope_max << endl;
-	cout << "Slope mean (degrees per century): " << 100*slope_mean << " +/- " << 100*standard_deviation(slopes) << endl;
+	cout << "Slope min (degrees per century):  " << 100 * slope_min << endl;
+	cout << "Slope max (degrees per century):  " << 100 * slope_max << endl;
+	cout << "Slope mean (degrees per century): " << 100 * slope_mean << " +/- " << 100 * standard_deviation(slopes) << endl;
+
 
 	float distance = fabsf(slope_max - slope_min); // can skip fabsf, I suppose
 	float bin_width = distance / static_cast<float>(num_histogram_bins);
@@ -254,12 +257,13 @@ void write_trend_histogram(const map<long unsigned int, station_data> &sd, const
 		}
 	}
 
+
 	float curr_mid = slope_min + half_bin_width;
 
 	cout << "Outputting gnuplot histogram data." << endl;
 	ofstream plotdata("histogram.txt");
 
-	for(size_t i = 0; i < num_histogram_bins; i++)
+	for (size_t i = 0; i < num_histogram_bins; i++)
 	{
 		plotdata << curr_mid << ' ' << bins[i] << endl;
 		curr_mid += bin_width;
@@ -274,10 +278,9 @@ void write_trend_histogram(const map<long unsigned int, station_data> &sd, const
 	plotcmd << "set xlabel \"Slope\"" << endl;
 	plotcmd << "set ylabel \"Count\"" << endl;
 	plotcmd << "set title \"Num slopes = " << slopes.size() << ", slope min = " << slope_min << ", slope max = " << slope_max << ", slope mean = " << slope_mean << ", num bins = " << num_histogram_bins << "\"" << endl;
-//	plotcmd << "set xrange [" << slope_min << ':' << slope_max << ']' << endl;
+	//	plotcmd << "set xrange [" << slope_min << ':' << slope_max << ']' << endl;
 	plotcmd << "set xrange [" << -0.2 << ':' << 0.2 << ']' << endl;
 	plotcmd << "plot \"histogram.txt\" with boxes" << endl;
 	plotcmd << "set terminal wxt" << endl;
 	plotcmd << "set output" << endl;
 }
-
