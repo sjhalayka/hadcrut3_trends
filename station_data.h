@@ -9,6 +9,7 @@
 #include <iostream>
 #include <fstream>
 #include <algorithm>
+#include <complex>
 using namespace std;
 
 
@@ -36,10 +37,10 @@ using namespace std;
 		friend ostream& operator<<(ostream &out, const station_data &s);
 	};
 
-	float regline_slope(vector<float> &x, vector<float> &y);
+	float regline_slope(const vector<complex<float>> &xy);
 	bool get_data(map<size_t, station_data> &sd);
-	void write_trend_histogram(const map<size_t, station_data>&sd, long unsigned int num_histogram_bins, const size_t min_samples_per_slope = 20);
-	void get_local_trends(const map<size_t, station_data>& sd, const size_t& station_id, const short unsigned int& first_year, const short unsigned int& last_year, vector<float>& output_trends, const size_t min_samples_per_slope);
+	void write_trend_histogram(const map<size_t, station_data>&sd, const long unsigned int num_histogram_bins, const size_t min_samples_per_slope = 20);
+	void get_local_trends(const station_data &s, const short unsigned int& first_year, const short unsigned int& last_year, vector<float>& output_trends, const size_t min_samples_per_slope);
 	float standard_deviation(const vector<float> &src);
 
 

@@ -61,34 +61,31 @@ ostream& operator<<(ostream &out, const station_data &s)
 {
 	out << s.name << ", " << s.country << ' ' << s.latitude << ' ' << s.longitude << endl;
 
-	for(map<short unsigned int, year_data>::const_iterator ci = s.years.begin(); ci != s.years.end(); ci++)
-		out << ci->first << ' ' << ci->second << endl;
+	for(map<short unsigned int, year_data>::const_iterator cy = s.years.begin(); cy != s.years.end(); cy++)
+		out << cy->first << ' ' << cy->second << endl;
 
 	return out;
 }
 
-float regline_slope(vector<float> &x, vector<float> &y)
+float regline_slope(const vector<complex<float>> &xy)
 {
-	if(x.size() != y.size())
-		return 0;
-
 	float x_mean = 0, y_mean = 0;
 
-	for(size_t i = 0; i < x.size(); i++)
+	for(size_t i = 0; i < xy.size(); i++)
 	{
-		x_mean += x[i];
-		y_mean += y[i];
+		x_mean += xy[i].real();
+		y_mean += xy[i].imag();
 	}
 
-	x_mean /= static_cast<float>(x.size());
-	y_mean /= static_cast<float>(y.size());
+	x_mean /= static_cast<float>(xy.size());
+	y_mean /= static_cast<float>(xy.size());
 
 	float covariance = 0, variance = 0;
 
-	for(size_t i = 0; i < x.size(); i++)
+	for(size_t i = 0; i < xy.size(); i++)
 	{
-		float z = x[i] - x_mean;
-		covariance += z*(y[i] - y_mean);
+		float z = xy[i].real() - x_mean;
+		covariance += z*(xy[i].imag() - y_mean);
 		variance += z*z;
 	}
 
@@ -175,40 +172,30 @@ bool get_data(map<size_t, station_data>& sd)
 	return true;
 }
 
-void get_local_trends(const map<size_t, station_data> &sd, const size_t &station_id, const short unsigned int &first_year, const short unsigned int &last_year, vector<float> &output_trends, const size_t min_samples_per_slope)
+void get_local_trends(const station_data &s, const short unsigned int& first_year, const short unsigned int& last_year, vector<float>& output_trends, const size_t min_samples_per_slope)
 {
 	output_trends.clear();
 
-	map<size_t, station_data>::const_iterator c = sd.find(station_id);
-
-	if (c == sd.end())
-		return;
-
 	// x is year, y is temperature
 	// one vector per month
-	vector<float> x[12], y[12];
+	vector<complex<float>> xy[12];
 
-	for(map<short unsigned int, year_data>::const_iterator ci = c->second.years.begin(); ci != c->second.years.end(); ci++)
+	for(map<short unsigned int, year_data>::const_iterator cy = s.years.begin(); cy != s.years.end(); cy++)
 	{
-		if(ci->first < first_year || ci->first > last_year)
+		if(cy->first < first_year || cy->first > last_year)
 			continue;
 
 		for(size_t k = 0; k < 12; k++)
-		{
-			if((ci->second).temperatures[k] != -99.0f)
-			{
-				x[k].push_back(static_cast<float>(ci->first));
-				y[k].push_back((ci->second).temperatures[k]);
-			}
-		}
+			if((cy->second).temperatures[k] != -99.0f)
+				xy[k].push_back(complex<float>(static_cast<float>(cy->first), (cy->second).temperatures[k]));
 	}
 
 	for(size_t j = 0; j < 12; j++)
-		if(min_samples_per_slope <= x[j].size())
-			output_trends.push_back(regline_slope(x[j], y[j]));
+		if(min_samples_per_slope <= xy[j].size())
+			output_trends.push_back(regline_slope(xy[j]));
 }
 
-void write_trend_histogram(const map<size_t, station_data> &sd, long unsigned int num_histogram_bins, const size_t min_samples_per_slope)
+void write_trend_histogram(const map<size_t, station_data> &sd, const long unsigned int num_histogram_bins, const size_t min_samples_per_slope)
 {
 	vector<float> slopes;
 
@@ -216,26 +203,17 @@ void write_trend_histogram(const map<size_t, station_data> &sd, long unsigned in
 	{
 		// x is year, y is temperature
 		// one vector per month
-		vector<float> x[12], y[12];
+		vector<complex<float>> xy[12];
 
 		for(map<short unsigned int, year_data>::const_iterator cy = cs->second.years.begin(); cy != cs->second.years.end(); cy++)
-		{
 			for(size_t k = 0; k < 12; k++)
-			{
 				if((cy->second).temperatures[k] != -99.0f)
-				{
-					x[k].push_back(static_cast<float>(cy->first));
-					y[k].push_back((cy->second).temperatures[k]);
-				}
-			}
-		}
+					xy[k].push_back(complex<float>(static_cast<float>(cy->first), (cy->second).temperatures[k]));
 
 		for(size_t j = 0; j < 12; j++)
-			if(min_samples_per_slope <= x[j].size())
-				slopes.push_back(regline_slope(x[j], y[j]));
+			if(min_samples_per_slope <= xy[j].size())
+				slopes.push_back(regline_slope(xy[j]));
 	}
-
-	sort(slopes.begin(), slopes.end());
 
 	float slope_min = FLT_MAX;
 	float slope_max = FLT_MIN;
@@ -255,9 +233,8 @@ void write_trend_histogram(const map<size_t, station_data> &sd, long unsigned in
 	slope_mean /= static_cast<double>(slopes.size());
 
 	cout << "Slope min (degrees per century):  " << 100*slope_min << endl;
-	cout << "Slope max (degrees per century):  " << 100 * slope_max << endl;
-	cout << "Slope mean (degrees per century): " << 100 * slope_mean << " +/- " << 100*standard_deviation(slopes) << endl;
-
+	cout << "Slope max (degrees per century):  " << 100*slope_max << endl;
+	cout << "Slope mean (degrees per century): " << 100*slope_mean << " +/- " << 100*standard_deviation(slopes) << endl;
 
 	float distance = fabsf(slope_max - slope_min); // can skip fabsf, I suppose
 	float bin_width = distance / static_cast<float>(num_histogram_bins);
@@ -266,17 +243,16 @@ void write_trend_histogram(const map<size_t, station_data> &sd, long unsigned in
 	vector<long unsigned int> bins(num_histogram_bins);
 	size_t slope_index = 0;
 
-	for(size_t i = 0; i < num_histogram_bins; i++)
+	for (size_t i = 0; i < num_histogram_bins; i++)
 	{
-		float curr_end = slope_min + (i+1)*bin_width;
+		float curr_end = slope_min + (i + 1) * bin_width;
 
-		while(slope_index < slopes.size() && slopes[slope_index] <= curr_end)
+		while (slope_index < slopes.size() && slopes[slope_index] <= curr_end)
 		{
 			bins[i]++;
 			slope_index++;
 		}
 	}
-
 
 	float curr_mid = slope_min + half_bin_width;
 

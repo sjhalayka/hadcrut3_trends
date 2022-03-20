@@ -35,7 +35,7 @@ int main(void)
 	{
 		vector<float> local_output_trends;
 
-		get_local_trends(sd, cs->first, min_year, max_year, local_output_trends, min_years_per_slope);
+		get_local_trends(sd[cs->first], min_year, max_year, local_output_trends, min_years_per_slope);
 
 		// cout << cs->second.name << ' ' << cs->second.country << ' ' << local_output_trends.size() << " trends" << endl;
 			
