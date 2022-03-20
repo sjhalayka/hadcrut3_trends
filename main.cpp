@@ -54,7 +54,7 @@ int main(void)
 	cout << 100*slope_mean << " +/- " << 100*standard_deviation(all_output_trends) << endl;
 
 
-	write_trend_histogram(sd, 100, min_years_per_slope);
+	//write_trend_histogram(sd, 100, min_years_per_slope);
 
 	return 0;
 }
