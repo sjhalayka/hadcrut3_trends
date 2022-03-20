@@ -89,8 +89,8 @@ float regline_slope(const vector<complex<float>> &xy)
 		variance += z*z;
 	}
 
-	covariance /= xy.size() - 1;
-	variance /= xy.size() - 1;
+	covariance /= xy.size();
+	variance /= xy.size();
 
 	return covariance / variance;
 }
