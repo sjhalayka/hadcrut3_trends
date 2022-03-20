@@ -186,7 +186,7 @@ void get_local_trends(const station_data &s, const short unsigned int& first_yea
 			continue;
 
 		for(size_t k = 0; k < 12; k++)
-			if((cy->second).temperatures[k] != -99.0f)
+			if((cy->second).temperatures[k] != -99.0f) // -99 indicates missing record
 				xy[k].push_back(complex<float>(static_cast<float>(cy->first), (cy->second).temperatures[k]));
 	}
 
@@ -207,7 +207,7 @@ void write_trend_histogram(const map<size_t, station_data> &sd, const long unsig
 
 		for(map<short unsigned int, year_data>::const_iterator cy = cs->second.years.begin(); cy != cs->second.years.end(); cy++)
 			for(size_t k = 0; k < 12; k++)
-				if((cy->second).temperatures[k] != -99.0f)
+				if((cy->second).temperatures[k] != -99.0f) // -99 indicates missing record
 					xy[k].push_back(complex<float>(static_cast<float>(cy->first), (cy->second).temperatures[k]));
 
 		for(size_t j = 0; j < 12; j++)
