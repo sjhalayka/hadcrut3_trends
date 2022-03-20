@@ -3,7 +3,8 @@
 
 int main(void)
 {
-	map<size_t, station_data> sd;
+	// Key is station ID
+	map<long unsigned int, station_data> sd;
 
 	if (false == get_data(sd))
 		return -1;
@@ -14,7 +15,7 @@ int main(void)
 	unsigned short int min_year = 10000;
 	unsigned short int max_year = 0;
 
-	for (map<size_t, station_data>::const_iterator cs = sd.begin(); cs != sd.end(); cs++)
+	for (map<long unsigned int, station_data>::const_iterator cs = sd.begin(); cs != sd.end(); cs++)
 	{
 		for (map<short unsigned int, year_data>::const_iterator cy = cs->second.years.begin(); cy != cs->second.years.end(); cy++)
 		{
@@ -31,7 +32,7 @@ int main(void)
 	// Collect all trends and gather its mean and standard deviation
 	vector<float> all_output_trends;
 
-	for (map<size_t, station_data>::const_iterator cs = sd.begin(); cs != sd.end(); cs++)
+	for (map<long unsigned int, station_data>::const_iterator cs = sd.begin(); cs != sd.end(); cs++)
 	{
 		vector<float> local_output_trends;
 

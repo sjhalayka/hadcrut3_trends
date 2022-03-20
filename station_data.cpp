@@ -115,7 +115,7 @@ float standard_deviation(const vector<float> &src)
 	return sqrt(sq_diff);
 }
 
-bool get_data(map<size_t, station_data>& sd)
+bool get_data(map<long unsigned int, station_data>& sd)
 {
 	sd.clear();
 
@@ -134,7 +134,7 @@ bool get_data(map<size_t, station_data>& sd)
 
 	for(size_t i = 0; i < num_stations; i++)
 	{
-		size_t station_id = 0;
+		long unsigned int station_id = 0;
 
 		// Read the station ID, which is the key to the map
 		infile.read(reinterpret_cast<char *>(&station_id), sizeof(long unsigned int));
@@ -195,11 +195,11 @@ void get_local_trends(const station_data &s, const short unsigned int& first_yea
 			output_trends.push_back(regline_slope(xy[j]));
 }
 
-void write_trend_histogram(const map<size_t, station_data> &sd, const long unsigned int num_histogram_bins, const size_t min_samples_per_slope)
+void write_trend_histogram(const map<long unsigned int, station_data> &sd, const long unsigned int num_histogram_bins, const size_t min_samples_per_slope)
 {
 	vector<float> slopes;
 
-	for (map<size_t, station_data>::const_iterator cs = sd.begin(); cs != sd.end(); cs++)
+	for (map<long unsigned int, station_data>::const_iterator cs = sd.begin(); cs != sd.end(); cs++)
 	{
 		// x is year, y is temperature
 		// one vector per month
