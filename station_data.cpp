@@ -3,7 +3,6 @@
 
 year_data::year_data(void)
 {
-//	year = 0;
 	temperatures[0] = temperatures[1] = temperatures[2] = temperatures[3] = 
 	temperatures[4] = temperatures[5] = temperatures[6] = temperatures[7] = 
 	temperatures[8] = temperatures[9] = temperatures[10] = temperatures[11] = 0;
@@ -11,8 +10,7 @@ year_data::year_data(void)
 
 bool year_data::operator==(const year_data &rhs) const
 {
-	if(//year == rhs.year && 
-		temperatures[0] == rhs.temperatures[0] && 
+	if(temperatures[0] == rhs.temperatures[0] && 
 		temperatures[1] == rhs.temperatures[1] && 
 		temperatures[2] == rhs.temperatures[2] && 
 		temperatures[3] == rhs.temperatures[3] && 
@@ -33,8 +31,7 @@ bool year_data::operator==(const year_data &rhs) const
 
 ostream& operator<<(ostream &out, const year_data &y)
 {
-	out //<< y.year << ' ' 
-		<< y.temperatures[0] << ' ' << y.temperatures[1] << ' ' << y.temperatures[2] << ' ' 
+	out << y.temperatures[0] << ' ' << y.temperatures[1] << ' ' << y.temperatures[2] << ' ' 
 		<< y.temperatures[3] << ' ' << y.temperatures[4] << ' ' << y.temperatures[5] << ' ' 
 		<< y.temperatures[6] << ' ' << y.temperatures[7] << ' ' << y.temperatures[8] << ' ' 
 		<< y.temperatures[9] << ' ' << y.temperatures[10] << ' ' << y.temperatures[11];
@@ -70,7 +67,6 @@ ostream& operator<<(ostream &out, const station_data &s)
 	return out;
 }
 
-
 float regline_slope(vector<float> &x, vector<float> &y)
 {
 	if(x.size() != y.size())
@@ -96,7 +92,7 @@ float regline_slope(vector<float> &x, vector<float> &y)
 		variance += z*z;
 	}
 
-	return covariance / variance; // beta
+	return covariance / variance;
 }
 
 float standard_deviation(const vector<float> &src)
@@ -141,25 +137,23 @@ bool get_data(map<size_t, station_data>& sd)
 
 	for(size_t i = 0; i < num_stations; i++)
 	{
-		static size_t temp_station_id = 0;
+		size_t station_id = 0;
 
-		// Read the station ID, even though we don't need it.
-		// The station ID is discarded because the station ID is
-		// the key to the map, which we would get from ci->first.
-		infile.read(reinterpret_cast<char *>(&temp_station_id), sizeof(long unsigned int));
+		// Read the station ID, which is the key to the map
+		infile.read(reinterpret_cast<char *>(&station_id), sizeof(long unsigned int));
 
 		short unsigned int length = 0;
 
 		infile.read(reinterpret_cast<char *>(&length), sizeof(short unsigned int));
-		sd[i].name.resize(length);
-		infile.read(reinterpret_cast<char *>(&sd[i].name[0]), sizeof(char)*length);
+		sd[station_id].name.resize(length);
+		infile.read(reinterpret_cast<char *>(&sd[station_id].name[0]), sizeof(char)*length);
 
 		infile.read(reinterpret_cast<char *>(&length), sizeof(short unsigned int));
-		sd[i].country.resize(length);
-		infile.read(reinterpret_cast<char *>(&sd[i].country[0]), sizeof(char)*length);
+		sd[station_id].country.resize(length);
+		infile.read(reinterpret_cast<char *>(&sd[station_id].country[0]), sizeof(char)*length);
 
-		infile.read(reinterpret_cast<char *>(&sd[i].latitude), sizeof(float));
-		infile.read(reinterpret_cast<char *>(&sd[i].longitude), sizeof(float));
+		infile.read(reinterpret_cast<char *>(&sd[station_id].latitude), sizeof(float));
+		infile.read(reinterpret_cast<char *>(&sd[station_id].longitude), sizeof(float));
 
 		long unsigned int num_years = 0;
 		infile.read(reinterpret_cast<char *>(&num_years), sizeof(long unsigned int));
@@ -172,7 +166,7 @@ bool get_data(map<size_t, station_data>& sd)
 			infile.read(reinterpret_cast<char *>(&year), sizeof(short unsigned int));
 			infile.read(reinterpret_cast<char *>(&y.temperatures[0]), sizeof(float)*12);
 
-			sd[i].years[year] = y;
+			sd[station_id].years[year] = y;
 		}
 	}
 
@@ -180,7 +174,6 @@ bool get_data(map<size_t, station_data>& sd)
 
 	return true;
 }
-
 
 void get_local_trends(const map<size_t, station_data> &sd, const size_t &station_id, const short unsigned int &first_year, const short unsigned int &last_year, vector<float> &output_trends, const size_t min_samples_per_slope)
 {
@@ -214,12 +207,6 @@ void get_local_trends(const map<size_t, station_data> &sd, const size_t &station
 		if(min_samples_per_slope <= x[j].size())
 			output_trends.push_back(regline_slope(x[j], y[j]));
 }
-
-
-
-
-
-
 
 void write_trend_histogram(const map<size_t, station_data> &sd, long unsigned int num_histogram_bins, const size_t min_samples_per_slope)
 {
