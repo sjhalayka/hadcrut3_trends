@@ -345,13 +345,7 @@ void print_all(const map<long unsigned int, station_data>& sd)
 		//if (cs->first != 718660 && cs->first != 718690)
 		//	continue;
 
-		cout << cs->first << ' ' << cs->second.name << ' ' << cs->second.country << endl;
-
-		for (map<short unsigned int, year_data>::const_iterator cy = cs->second.years.begin(); cy != cs->second.years.end(); cy++)
-		{
-			cout << "   " << cy->first << ' ' << cy->second << endl;
-		}
-
-		cout << endl;
+		// Print Station ID and station data
+		cout << cs->first << ' ' << cs->second << endl;
 	}
 }

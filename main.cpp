@@ -3,7 +3,7 @@
 
 int main(void)
 {
-	// Key is station ID
+	// Map key is station ID
 	map<long unsigned int, station_data> sd;
 	const size_t min_years_per_slope = 20;
 
@@ -13,7 +13,7 @@ int main(void)
 
 
 	// Print everything to the console
-	//print_all(sd);
+	// print_all(sd);
 
 
 
