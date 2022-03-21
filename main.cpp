@@ -13,7 +13,7 @@ int main(void)
 
 
 	// Print everything to the console
-	print_all(sd);
+	//print_all(sd);
 
 
 
