@@ -69,7 +69,8 @@ ostream& operator<<(ostream &out, const station_data &s)
 
 float regline_slope(const vector<complex<float>> &xy)
 {
-	float x_mean = 0, y_mean = 0;
+	float x_mean = 0;
+	float y_mean = 0;
 
 	for(size_t i = 0; i < xy.size(); i++)
 	{
@@ -77,10 +78,11 @@ float regline_slope(const vector<complex<float>> &xy)
 		y_mean += xy[i].imag();
 	}
 
-	x_mean /= static_cast<float>(xy.size());
-	y_mean /= static_cast<float>(xy.size());
+	x_mean /= xy.size();
+	y_mean /= xy.size();
 
-	float covariance = 0, variance = 0;
+	float covariance = 0;
+	float variance = 0;
 
 	for(size_t i = 0; i < xy.size(); i++)
 	{
@@ -89,6 +91,9 @@ float regline_slope(const vector<complex<float>> &xy)
 		variance += z*z;
 	}
 
+	// These two divisions can be commented out
+	// because they do not affect the ratio of
+	// covariance and variance
 	covariance /= xy.size();
 	variance /= xy.size();
 
