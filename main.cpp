@@ -37,7 +37,7 @@ int main(void)
 
 
 	// Create a histogram and a gnuplot script
-	write_trend_histogram(sd, 100, min_years_per_slope);
+	write_trend_histogram(sd, 101, min_years_per_slope);
 
 
 	return 0;
