@@ -16,7 +16,7 @@ using namespace std;
 	class year_data
 	{
 	public:
-		float temperatures[12];
+		float temperatures[12]; // 12 months per year
 
 		year_data(void);
 		bool operator==(const year_data &rhs) const;
@@ -44,6 +44,7 @@ using namespace std;
 	void write_trend_histogram(const map<long unsigned int, station_data>&sd, const long unsigned int num_histogram_bins, const size_t min_samples_per_slope = 20);
 	void get_local_trends(const station_data &s, const short unsigned int& first_year, const short unsigned int& last_year, vector<float>& output_trends, const size_t min_samples_per_slope);
 	float standard_deviation(const vector<float> &src);
+	void print_all(const map<long unsigned int, station_data>& sd);
 
 
 #endif

@@ -5,12 +5,16 @@ int main(void)
 {
 	// Key is station ID
 	map<long unsigned int, station_data> sd;
+	const size_t min_years_per_slope = 20;
+
 
 	if (false == get_data(sd))
 		return -1;
 
 
-	const size_t min_years_per_slope = 20;
+	// Print everything to the console
+	print_all(sd);
+
 
 
 	// Get earliest and most recent years with records
@@ -34,6 +38,7 @@ int main(void)
 
 	// Create a histogram and a gnuplot script
 	write_trend_histogram(sd, 100, min_years_per_slope);
+
 
 	return 0;
 }

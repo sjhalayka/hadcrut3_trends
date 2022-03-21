@@ -336,3 +336,22 @@ void write_trend_histogram(const map<long unsigned int, station_data>& sd, long 
 	plotcmd << "set terminal wxt" << endl;
 	plotcmd << "set output" << endl;
 }
+
+void print_all(const map<long unsigned int, station_data>& sd)
+{
+	for (map<long unsigned int, station_data>::const_iterator cs = sd.begin(); cs != sd.end(); cs++)
+	{
+		// Only print out Saskatoon and Prince Albert, Canada :)
+		//if (cs->first != 718660 && cs->first != 718690)
+		//	continue;
+
+		cout << cs->first << ' ' << cs->second.name << ' ' << cs->second.country << endl;
+
+		for (map<short unsigned int, year_data>::const_iterator cy = cs->second.years.begin(); cy != cs->second.years.end(); cy++)
+		{
+			cout << "   " << cy->first << ' ' << cy->second << endl;
+		}
+
+		cout << endl;
+	}
+}
